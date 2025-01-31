@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * NestPay Abstract Response
  */
@@ -22,9 +24,15 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
     public function __construct(RequestInterface $request, $data)
     {
         parent::__construct($request, $data);
-        $this->data = (is_string($data)) ? json_decode(json_encode((array)simplexml_load_string($data),
-            JSON_THROW_ON_ERROR), 1, 512,
-            JSON_THROW_ON_ERROR) : $data;
+        $this->data = (is_string($data)) ? json_decode(
+            json_encode(
+                (array)simplexml_load_string($data),
+                JSON_THROW_ON_ERROR
+            ),
+            1,
+            512,
+            JSON_THROW_ON_ERROR
+        ) : $data;
     }
 
     /**

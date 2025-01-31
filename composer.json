@@ -1,17 +1,17 @@
 {
-  "name": "ucraft-com/omnipay-klarna",
+  "name": "ucraft-com/omnipay-nestPay",
   "type": "library",
-  "description": "Klarna gateway for Omnipay payment processing library",
+  "description": "nestPay gateway for Omnipay payment processing library",
   "keywords": [
     "gateway",
     "merchant",
     "omnipay",
     "pay",
     "payment",
-    "klarna",
+    "nestPay",
     "purchase"
   ],
-  "homepage": "https://github.com/craft-com/omnipay-klarna",
+  "homepage": "https://github.com/craft-com/omnipay-nestPay",
   "license": "MIT",
   "authors": [
     {
@@ -21,7 +21,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Uc\\Omnipay\\BKT\\": "src/"
+      "Omnipay\\NestPay\\": "src/"
     }
   },
   "require": {
@@ -29,7 +29,9 @@
     "ext-json": "*",
     "php": "^8.1",
     "guzzlehttp/guzzle": "^7.8",
-    "php-http/guzzle7-adapter": "^1.0"
+    "php-http/guzzle7-adapter": "^1.0",
+    "ext-dom": "*",
+    "ext-simplexml": "*"
   },
   "require-dev": {
     "omnipay/tests": "^4",

@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Omnipay\NestPay\Messages;
 
 use Omnipay\Common\Exception\InvalidRequestException;
 
 class RefundRequest extends AbstractRequest
 {
-
     /**
      * @inheritDoc
      * @throws InvalidRequestException

@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * NestPay Complete Purchase Request
  */
@@ -114,19 +116,19 @@ class CompletePurchaseRequest extends AbstractRequest
     {
         $data = $this->getResponseData();
         $postParams = [];
-        foreach ($data as $key => $value){
+        foreach ($data as $key => $value) {
             array_push($postParams, $key);
         }
 
         natcasesort($postParams);
 
         $hashval = "";
-        foreach ($postParams as $param){
+        foreach ($postParams as $param) {
             $paramValue = $data[$param];
             $escapedParamValue = str_replace("|", "\\|", str_replace("\\", "\\\\", $paramValue));
 
             $lowerParam = strtolower($param);
-            if($lowerParam != "hash" && $lowerParam != "encoding" )	{
+            if ($lowerParam != "hash" && $lowerParam != "encoding") {
                 $hashval = $hashval . $escapedParamValue . "|";
             }
         }
@@ -135,7 +137,7 @@ class CompletePurchaseRequest extends AbstractRequest
         $escapedStoreKey = str_replace("|", "\\|", str_replace("\\", "\\\\", $storeKey));
         $hashval = $hashval . $escapedStoreKey;
         $calculatedHashValue = hash('sha512', $hashval);
-        return  base64_encode (pack('H*',$calculatedHashValue));
+        return  base64_encode(pack('H*', $calculatedHashValue));
     }
 
     /**

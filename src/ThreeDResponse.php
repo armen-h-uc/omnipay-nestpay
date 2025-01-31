@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Omnipay\NestPay;
 
 class ThreeDResponse
@@ -311,5 +313,4 @@ class ThreeDResponse
     {
         $this->installment = $installment;
     }
-
 }

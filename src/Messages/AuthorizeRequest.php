@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * NestPay Authorize Request
  */
@@ -9,7 +11,6 @@ use Exception;
 
 class AuthorizeRequest extends AbstractRequest
 {
-
     /**
      * @return array
      * @throws Exception
@@ -59,4 +60,3 @@ class AuthorizeRequest extends AbstractRequest
         return 'PreAuth';
     }
 }
-

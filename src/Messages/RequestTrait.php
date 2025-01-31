@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Omnipay\NestPay\Messages;
 
 trait RequestTrait
 {
-
     public $baseUrls = [
         'isbank' => 'https://spos.isbank.com.tr',
         'akbank' => 'https://www.sanalakpos.com',

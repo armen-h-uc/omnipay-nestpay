@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * NestPay Abstract Request
  */
@@ -20,7 +22,8 @@ use Omnipay\NestPay\ThreeDResponse;
 
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest implements RequestInterface
 {
-    use RequestTrait, ParametersTrait;
+    use RequestTrait;
+    use ParametersTrait;
 
     /** @var $root DOMElement */
     private $root;
@@ -132,8 +135,12 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
 
             $this->document->appendChild($this->root);
             $this->addShipAndBillToXml($shipInfo, $billInfo);
-            $httpRequest = $this->httpClient->request($this->getHttpMethod(), $this->getEndpoint(),
-                ['Content-Type' => 'application/x-www-form-urlencoded'], $this->document->saveXML());
+            $httpRequest = $this->httpClient->request(
+                $this->getHttpMethod(),
+                $this->getEndpoint(),
+                ['Content-Type' => 'application/x-www-form-urlencoded'],
+                $this->document->saveXML()
+            );
 
             $response = (string)$httpRequest->getBody()->getContents();
 
@@ -293,7 +300,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
             throw new InvalidCreditCardException('Card is not valid, just only Visa or MasterCard can be usable');
         }
 
-        $data = array();
+        $data = [];
         $data['pan'] = $this->getCard()->getNumber();
         $data['cv2'] = $this->getCard()->getCvv();
         $data['Ecom_Payment_Card_ExpDate_Year'] = $this->getCard()->getExpiryDate('y');
@@ -356,7 +363,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         $redirectUrl = $this->getEndpoint();
         $this->validate('amount');
 
-        $data = array();
+        $data = [];
         $data['clientid'] = $this->getClientId();
         $data['oid'] = $this->getTransactionId();
         $data['amount'] = $this->getAmount();
@@ -425,7 +432,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         if (\in_array($key, $sensitiveData, true)) {
             $data = Mask::mask($data);
         }
-
     }
 
     /**

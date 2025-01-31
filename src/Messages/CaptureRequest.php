@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * NestPay Capture Request
  */
@@ -58,4 +60,3 @@ class CaptureRequest extends AbstractRequest
         return 'PostAuth';
     }
 }
-
