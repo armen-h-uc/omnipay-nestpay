@@ -1,0 +1,52 @@
+{
+  "name": "ucraft-com/omnipay-klarna",
+  "type": "library",
+  "description": "Klarna gateway for Omnipay payment processing library",
+  "keywords": [
+    "gateway",
+    "merchant",
+    "omnipay",
+    "pay",
+    "payment",
+    "klarna",
+    "purchase"
+  ],
+  "homepage": "https://github.com/craft-com/omnipay-klarna",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Armen Hovhannisyan",
+      "email": "armen.hov@ucraft.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Uc\\Omnipay\\BKT\\": "src/"
+    }
+  },
+  "require": {
+    "omnipay/common": "^3",
+    "ext-json": "*",
+    "php": "^8.1",
+    "guzzlehttp/guzzle": "^7.8",
+    "php-http/guzzle7-adapter": "^1.0"
+  },
+  "require-dev": {
+    "omnipay/tests": "^4",
+    "http-interop/http-factory-guzzle": "^1.2",
+    "symfony/var-dumper": "^6.4",
+    "friendsofphp/php-cs-fixer": "^3.40"
+  },
+  "scripts": {
+    "style": [
+      "vendor/bin/php-cs-fixer fix --allow-risky=yes"
+    ]
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
