@@ -1,5 +1,5 @@
 {
-  "name": "ucraft-com/omnipay-nestPay",
+  "name": "armen-h-uc/omnipay-nestpay",
   "type": "library",
   "description": "nestPay gateway for Omnipay payment processing library",
   "keywords": [
@@ -48,5 +48,7 @@
     "allow-plugins": {
       "php-http/discovery": true
     }
-  }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
