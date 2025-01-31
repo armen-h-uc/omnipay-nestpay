@@ -48,7 +48,5 @@
     "allow-plugins": {
       "php-http/discovery": true
     }
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+  }
 }
