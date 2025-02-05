@@ -198,4 +198,29 @@ class Gateway extends AbstractGateway
     {
         return $this->createRequest(StatusRequest::class, $parameters);
     }
+
+    /**
+     * @param array $request
+     * @return bool
+     */
+    public function verify($request)
+    {
+        $params = $request['HASHPARAMS'];
+        if (!$params) {
+            return false;
+        }
+        $keys = explode(':', $params);
+        $val = [];
+        foreach ($keys as $key) {
+            $val[] = @$request[$key];
+        }
+        $str = join('', $val) . $this->getStoreKey();
+        $hash = base64_encode(pack('H*', sha1($str)));
+        if ($hash != $request['HASH']) {
+            return false;
+        }
+
+
+        return true;
+    }
 }

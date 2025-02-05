@@ -2,30 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Omnipay\NestPay\Messages;
+namespace Omnipay\NestPay\Traits;
 
 trait RequestTrait
 {
-    public $baseUrls = [
-        'isbank' => 'https://spos.isbank.com.tr',
-        'akbank' => 'https://www.sanalakpos.com',
-        'finansbank' => 'https://www.fbwebpos.com',
-        'denizbank' => 'https://denizbank.est.com.tr',
-        'kuveytturk' => 'https://kuveytturk.est.com.tr',
-        'halkbank' => 'https://sanalpos.halkbank.com.tr',
-        'anadolubank' => 'https://anadolusanalpos.est.com.tr',
-        'hsbc' => 'https://vpos.advantage.com.tr',
-        'ziraatbank' => 'https://sanalpos2.ziraatbank.com.tr',
+    public array $baseUrls = [
         'bktbank' => 'https://pgw.bkt.com.al',
         'test' => 'https://torus-stage-bkt.asseco-see.com.tr'
     ];
 
-    protected $allowedCardBrands = [
+    protected array $allowedCardBrands = [
         'visa' => 1,
         'mastercard' => 2
     ];
 
-    public $url = [
+    public array $url = [
         'test' => [
             'purchase' => '/fim/api',
             '3d' => '/fim/est3Dgate'
@@ -39,6 +30,9 @@ trait RequestTrait
         "purchase" => "/servlet/cc5ApiServer"
     ];
 
+    /**
+     * @return string
+     */
     public function getEndpoint(): string
     {
         $baseUrl = $this->getBaseUrl();
@@ -50,6 +44,9 @@ trait RequestTrait
         return $baseUrl . $this->url[$action];
     }
 
+    /**
+     * @return string
+     */
     public function getBaseUrl(): string
     {
         $bank = $this->getBank();
@@ -59,6 +56,9 @@ trait RequestTrait
         return $this->baseUrls[$bank];
     }
 
+    /**
+     * @return string
+     */
     public function getRnd(): string
     {
         return (string) time();

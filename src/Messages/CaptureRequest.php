@@ -1,9 +1,6 @@
 <?php
 
 declare(strict_types=1);
-/**
- * NestPay Capture Request
- */
 
 namespace Omnipay\NestPay\Messages;
 
@@ -12,6 +9,30 @@ use Omnipay\Common\Exception\InvalidRequestException;
 class CaptureRequest extends AbstractRequest
 {
     /**
+     * @return string[]
+     */
+    public function getSensitiveData(): array
+    {
+        return ['Number', 'Expires', 'Password'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessName(): string
+    {
+        return 'Capture';
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessType(): string
+    {
+        return 'PostAuth';
+    }
+
+    /**
      * @return array
      * @throws InvalidRequestException
      */
@@ -19,6 +40,7 @@ class CaptureRequest extends AbstractRequest
     {
         $data = $this->getSalesRequestParams();
         $this->setRequestParams($data);
+
         return $data;
     }
 
@@ -34,29 +56,5 @@ class CaptureRequest extends AbstractRequest
         $response->setServiceRequestParams($requestParams);
 
         return $response;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getSensitiveData(): array
-    {
-        return ['Number', 'Expires', 'Password'];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getProcessName(): string
-    {
-        return 'Capture';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getProcessType(): string
-    {
-        return 'PostAuth';
     }
 }

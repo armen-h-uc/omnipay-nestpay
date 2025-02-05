@@ -7,19 +7,42 @@ namespace Omnipay\NestPay\Messages;
 class VoidRequest extends AbstractRequest
 {
     /**
-     * @inheritDoc
+     * @return array
      */
-    public function getData()
+    public function getSensitiveData(): array
+    {
+        return ['Password'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessName(): string
+    {
+        return 'Void';
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessType(): string
+    {
+        return 'Void';
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
     {
         $data['Type'] = $this->getProcessType();
         $data['OrderId'] = $this->getTransactionId();
         $data['Name'] = $this->getUserName();
         $data['Password'] = $this->getPassword();
         $data['ClientId'] = $this->getClientId();
-        // $data['Currency'] = $this->getCurrencyNumeric();
-        // $data['Total'] = $this->getAmount();
 
         $this->setRequestParams($data);
+
         return $data;
     }
 
@@ -35,30 +58,5 @@ class VoidRequest extends AbstractRequest
         $response->setServiceRequestParams($requestParams);
 
         return $response;
-    }
-
-
-    /**
-     * @return array
-     */
-    public function getSensitiveData(): array
-    {
-        return ['Password'];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getProcessName(): string
-    {
-        return 'Void';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getProcessType(): string
-    {
-        return 'Void';
     }
 }

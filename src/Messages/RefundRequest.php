@@ -4,15 +4,37 @@ declare(strict_types=1);
 
 namespace Omnipay\NestPay\Messages;
 
-use Omnipay\Common\Exception\InvalidRequestException;
-
 class RefundRequest extends AbstractRequest
 {
     /**
-     * @inheritDoc
-     * @throws InvalidRequestException
+     * @return array
      */
-    public function getData()
+    public function getSensitiveData(): array
+    {
+        return ['Password'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessName(): string
+    {
+        return 'Refund';
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessType(): string
+    {
+        return 'Credit';
+    }
+
+    /**
+     * @return array
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     */
+    public function getData(): array
     {
         $this->validate('amount');
 
@@ -25,11 +47,13 @@ class RefundRequest extends AbstractRequest
         $data['Currency'] = $this->getCurrencyNumeric();
 
         $this->setRequestParams($data);
+
         return $data;
     }
 
     /**
      * @param $data
+     *
      * @return RefundResponse
      * @throws \JsonException
      */
@@ -40,29 +64,5 @@ class RefundRequest extends AbstractRequest
         $response->setServiceRequestParams($requestParams);
 
         return $response;
-    }
-
-    /**
-     * @return array
-     */
-    public function getSensitiveData(): array
-    {
-        return ['Password'];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getProcessName(): string
-    {
-        return 'Refund';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getProcessType(): string
-    {
-        return 'Credit';
     }
 }

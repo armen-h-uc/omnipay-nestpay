@@ -1,9 +1,6 @@
 <?php
 
 declare(strict_types=1);
-/**
- * NestPay Authorize Request
- */
 
 namespace Omnipay\NestPay\Messages;
 
@@ -13,12 +10,37 @@ class AuthorizeRequest extends AbstractRequest
 {
     /**
      * @return array
+     */
+    public function getSensitiveData(): array
+    {
+        return ['Number', 'Expires', 'Password'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessName(): string
+    {
+        return 'Authorize';
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessType(): string
+    {
+        return 'PreAuth';
+    }
+
+    /**
+     * @return array
      * @throws Exception
      */
     public function getData(): array
     {
         $data = $this->getSalesRequestParams();
         $this->setRequestParams($data);
+
         return $data;
     }
 
@@ -34,29 +56,5 @@ class AuthorizeRequest extends AbstractRequest
         $response->setServiceRequestParams($requestParams);
 
         return $response;
-    }
-
-    /**
-     * @return array
-     */
-    public function getSensitiveData(): array
-    {
-        return ['Number', 'Expires', 'Password'];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getProcessName(): string
-    {
-        return 'Authorize';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getProcessType(): string
-    {
-        return 'PreAuth';
     }
 }

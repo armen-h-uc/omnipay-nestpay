@@ -1,9 +1,6 @@
 <?php
 
 declare(strict_types=1);
-/**
- * NestPay Abstract Request
- */
 
 namespace Omnipay\NestPay\Messages;
 
@@ -11,7 +8,6 @@ use DOMDocument;
 use DOMElement;
 use Exception;
 use InvalidArgumentException;
-use Money\Currency;
 use Omnipay\Common\Exception\InvalidCreditCardException;
 use Omnipay\Common\Exception\InvalidRequestException;
 use Omnipay\Common\Exception\InvalidResponseException;
@@ -19,6 +15,8 @@ use Omnipay\Common\Message\ResponseInterface;
 use Omnipay\NestPay\Mask;
 use Omnipay\NestPay\RequestInterface;
 use Omnipay\NestPay\ThreeDResponse;
+use Omnipay\NestPay\Traits\ParametersTrait;
+use Omnipay\NestPay\Traits\RequestTrait;
 
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest implements RequestInterface
 {
@@ -109,7 +107,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
      * @return ResponseInterface|AbstractResponse
      * @throws InvalidResponseException
      */
-    public function sendData($data)
+    public function sendData($data): AbstractResponse|ResponseInterface
     {
         try {
             $processType = $this->getProcessType();
@@ -123,7 +121,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
             $this->document = new DOMDocument('1.0', 'UTF-8');
             $this->root = $this->document->createElement('CC5Request');
             foreach ($data as $id => $value) {
-                $this->root->appendChild($this->document->createElement($id, $value));
+                $this->root->appendChild($this->document->createElement($id, (string)$value));
             }
 
             $extra = $this->document->createElement('Extra');
@@ -154,7 +152,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getInstallment(): ?string
     {
@@ -188,7 +186,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getStatus(): ?string
     {
@@ -205,10 +203,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     }
 
     /**
-     * Get HTTP Method.
-     *
-     * This is nearly always POST but can be over-ridden in sub classes.
-     *
      * @return string
      */
     protected function getHttpMethod(): string
@@ -271,9 +265,11 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         $data['Total'] = $threeDResponse->getAmount();
         $data['Currency'] = $threeDResponse->getCurrency();
         $installment = $threeDResponse->getInstallment();
+
         if (empty($installment) || (int)$installment < 2) {
             $installment = '';
         }
+
         $data['Taksit'] = $installment;
         $data['PayerTxnId'] = $threeDResponse->getXid();
         $data['PayerSecurityLevel'] = $threeDResponse->getEci();
@@ -282,6 +278,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         $data['bill'] = $this->getBillTo();
         $data['ship'] = $this->getShipTo();
         $data['Extra'] = '';
+
         return $data;
     }
 
@@ -321,6 +318,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
 
         $data['taksit'] = "";
         $installment = $this->getInstallment();
+
         if ($installment !== null && $installment > 1) {
             $data['taksit'] = $installment;
         }
@@ -328,9 +326,15 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         $signature = $this->getHash($data);
         $data['hash'] = base64_encode(sha1($signature, true));
         $data['redirectUrl'] = $redirectUrl;
+
         return $data;
     }
 
+    /**
+     * @param array $data
+     *
+     * @return string
+     */
     public function get3DHostingHash(array $data): string
     {
         return $data['clientid'] .
@@ -343,20 +347,22 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
             $this->getStoreKey();
     }
 
-    public function getCurrencyNumeric()
+    /**
+     * @return string|null
+     */
+    public function getCurrencyNumeric(): ?string
     {
         $number = parent::getCurrencyNumeric();
         if (!is_null($number)) {
             return str_pad($number, 3, '0', STR_PAD_LEFT);
         }
 
-        return $number;
+        return null;
     }
 
     /**
      * @return array
-     * @throws InvalidCreditCardException
-     * @throws InvalidRequestException
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
      */
     public function getPurchase3DHostingData(): array
     {
@@ -376,24 +382,33 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         $data['rnd'] = $this->getRnd();
         $data['refreshtime'] = $this->getTestMode() ? 10 : 0;
         $installment = $this->getInstallment();
+
         if ($installment !== null && $installment > 1) {
             $data['taksit'] = $installment;
         }
+
         $data['hashAlgorithm'] = 'ver3';
 
         $data['redirectUrl'] = $redirectUrl;
         ksort($data);
         $hashString = '';
+
         foreach ($data as $value) {
             $escapedValue = str_replace(['|', '\\'], ['\|', '\\\\'], (string) $value);
             $hashString .= $escapedValue . '|';
         }
+
         $hashString .= $this->getStoreKey();
         $data['hash'] = base64_encode(hash('sha512', $hashString, true));
 
         return $data;
     }
 
+    /**
+     * @param array $data
+     *
+     * @return string
+     */
     public function getHash(array $data): string
     {
         return $data['clientid'] .
@@ -419,12 +434,23 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         ];
     }
 
+    /**
+     * @param array $data
+     *
+     * @return void
+     */
     protected function setRequestParams(array $data): void
     {
         array_walk_recursive($data, [$this, 'updateValue']);
         $this->requestParams = $data;
     }
 
+    /**
+     * @param $data
+     * @param $key
+     *
+     * @return void
+     */
     protected function updateValue(&$data, $key): void
     {
         $sensitiveData = $this->getSensitiveData();
@@ -473,6 +499,9 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     /**
      * @param array $ship
      * @param array $bill
+     *
+     * @return void
+     * @throws \DOMException
      */
     private function addShipAndBillToXml(array $ship, array $bill): void
     {
@@ -493,6 +522,9 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         }
     }
 
+    /**
+     * @return string[]
+     */
     private function getBillTo(): array
     {
         return [
@@ -509,6 +541,9 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         ];
     }
 
+    /**
+     * @return string[]
+     */
     private function getShipTo(): array
     {
         return [

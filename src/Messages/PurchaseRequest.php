@@ -1,13 +1,9 @@
 <?php
 
 declare(strict_types=1);
-/**
- * NestPay Purchase Request
- */
 
 namespace Omnipay\NestPay\Messages;
 
-use Exception;
 use Omnipay\Common\Exception\InvalidResponseException;
 use Omnipay\Common\Message\ResponseInterface;
 
@@ -17,10 +13,38 @@ class PurchaseRequest extends AbstractRequest
     private const PAYMENT_TYPE_3D_HOSTING = "3d_pay_hosting";
 
     /**
-     * @return array|mixed
-     * @throws Exception
+     * @return array
      */
-    public function getData()
+    public function getSensitiveData(): array
+    {
+        return ['Number', 'Expires', 'Password'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessName(): string
+    {
+        if ($this->getPaymentMethod() === self::PAYMENT_TYPE_3D) {
+            return 'Purchase3D';
+        }
+        return 'Purchase';
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessType(): string
+    {
+        return 'Auth';
+    }
+
+    /**
+     * @return array
+     * @throws \Omnipay\Common\Exception\InvalidCreditCardException
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     */
+    public function getData(): array
     {
         if ($this->getPaymentMethod() === self::PAYMENT_TYPE_3D_HOSTING) {
             $this->setAction('3d');
@@ -33,15 +57,17 @@ class PurchaseRequest extends AbstractRequest
         }
 
         $this->setRequestParams($data);
+
         return $data;
     }
 
     /**
      * @param mixed $data
+     *
      * @return ResponseInterface
      * @throws InvalidResponseException
      */
-    public function sendData($data)
+    public function sendData($data): ResponseInterface
     {
         if (in_array($this->getPaymentMethod(), [self::PAYMENT_TYPE_3D, self::PAYMENT_TYPE_3D_HOSTING])) {
             return $this->response = $this->createResponse($data, Purchase3DResponse::class);
@@ -53,6 +79,7 @@ class PurchaseRequest extends AbstractRequest
     /**
      * @param $responseClass
      * @param $data
+     *
      * @return ResponseInterface
      */
     protected function createResponse($data, $responseClass = null): ResponseInterface
@@ -64,33 +91,5 @@ class PurchaseRequest extends AbstractRequest
         $response->setServiceRequestParams($requestParams);
 
         return $response;
-    }
-
-
-    /**
-     * @return array
-     */
-    public function getSensitiveData(): array
-    {
-        return ['Number', 'Expires', 'Password'];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getProcessName(): string
-    {
-        if ($this->getPaymentMethod() === self::PAYMENT_TYPE_3D) {
-            return 'Purchase3D';
-        }
-        return 'Purchase';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getProcessType(): string
-    {
-        return 'Auth';
     }
 }

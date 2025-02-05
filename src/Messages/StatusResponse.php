@@ -6,4 +6,19 @@ namespace Omnipay\NestPay\Messages;
 
 class StatusResponse extends AbstractResponse
 {
+    /**
+     * @return bool
+     */
+    public function isPaid(): bool
+    {
+        return $this->getStatus() === 'Approved';
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getStatus(): ?string
+    {
+        return $this->data['Response'] ?? null;
+    }
 }

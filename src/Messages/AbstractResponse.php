@@ -1,9 +1,6 @@
 <?php
 
 declare(strict_types=1);
-/**
- * NestPay Abstract Response
- */
 
 namespace Omnipay\NestPay\Messages;
 
@@ -13,12 +10,14 @@ use Omnipay\Common\Message\RequestInterface;
 abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse implements RedirectResponseInterface
 {
     /** @var array */
-    public $serviceRequestParams;
+    public array $serviceRequestParams;
 
     /**
      * AbstractResponse constructor.
+     *
      * @param RequestInterface $request
-     * @param $data
+     * @param                  $data
+     *
      * @throws \JsonException
      */
     public function __construct(RequestInterface $request, $data)
@@ -29,7 +28,7 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
                 (array)simplexml_load_string($data),
                 JSON_THROW_ON_ERROR
             ),
-            1,
+            true,
             512,
             JSON_THROW_ON_ERROR
         ) : $data;
@@ -40,7 +39,7 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
      */
     public function getMessage(): ?string
     {
-        return $this->isSuccessful() ? $this->data['Response'] : $this->data['ErrMsg'];
+        return $this->isSuccessful() ? $this->data['Response'] ?? null : $this->data['ErrMsg'];
     }
 
     /**
@@ -58,15 +57,30 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
     public function isSuccessful(): bool
     {
         if (isset($this->data['ProcReturnCode'])) {
-            return (string)$this->data["ProcReturnCode"] === '00' || $this->data["Response"] === 'Approved';
+            return (string)$this->data["ProcReturnCode"] === '00';
+        }
+
+        if (isset($this->data['Response'])) {
+            return $this->data["Response"] === 'Approved';
         }
 
         return false;
     }
 
+    /**
+     * @return string|null
+     */
     public function getTransactionReference(): ?string
     {
-        return $this->isSuccessful() ? $this->data['TransId'] : parent::getTransactionReference();
+        return $this->isSuccessful() ? $this->data['TransId'] ?? '' : parent::getTransactionReference();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTransactionId(): ?string
+    {
+        return $this->data['oid'] ?? $this->data['OrderId'] ?? null;
     }
 
     /**
