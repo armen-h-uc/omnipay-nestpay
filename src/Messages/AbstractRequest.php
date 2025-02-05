@@ -99,55 +99,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     }
 
     /**
-     * @param mixed $data
-     * @return ResponseInterface|AbstractResponse
-     * @throws InvalidResponseException
-     */
-    public function sendData($data): AbstractResponse|ResponseInterface
-    {
-        try {
-            $processType = $this->getProcessType();
-            if (!empty($processType)) {
-                $data['Type'] = $processType;
-            }
-            $shipInfo = $data['ship'] ?? [];
-            $billInfo = $data['bill'] ?? [];
-            unset($data['ship'], $data['bill']);
-
-            $this->document = new DOMDocument('1.0', 'UTF-8');
-            $this->root = $this->document->createElement('CC5Request');
-            foreach ($data as $id => $value) {
-                $this->root->appendChild($this->document->createElement($id, (string)$value));
-            }
-
-            $extra = $this->document->createElement('Extra');
-
-            if (!empty($this->getStatus())) {
-                $extra->appendChild($this->document->createElement('ORDERSTATUS', 'QUERY'));
-                $this->root->appendChild($extra);
-            }
-
-            $this->document->appendChild($this->root);
-            $this->addShipAndBillToXml($shipInfo, $billInfo);
-            $httpRequest = $this->httpClient->request(
-                $this->getHttpMethod(),
-                $this->getEndpoint(),
-                ['Content-Type' => 'application/x-www-form-urlencoded'],
-                $this->document->saveXML()
-            );
-
-            $response = (string)$httpRequest->getBody()->getContents();
-
-            return $this->response = $this->createResponse($response);
-        } catch (Exception $e) {
-            throw new InvalidResponseException(
-                'Error communicating with payment gateway: ' . $e->getMessage(),
-                $e->getCode()
-            );
-        }
-    }
-
-    /**
      * @return string|null
      */
     public function getInstallment(): ?string
@@ -182,20 +133,21 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     }
 
     /**
-     * @return string|null
+     * @return bool|null
      */
-    public function getStatus(): ?string
+    public function getOrderStatusQuery(): ?bool
     {
-        return $this->getParameter('status');
+        return $this->getParameter('order_status_query');
     }
 
     /**
-     * @param string $value
-     * @return AbstractRequest
+     * @param bool $value
+     *
+     * @return \Omnipay\NestPay\Messages\AbstractRequest
      */
-    public function setStatus(string $value): AbstractRequest
+    public function setOrderStatusQuery(bool $value): AbstractRequest
     {
-        return $this->setParameter('status', $value);
+        return $this->setParameter('order_status_query', $value);
     }
 
     /**
@@ -204,6 +156,56 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     protected function getHttpMethod(): string
     {
         return 'POST';
+    }
+
+
+    /**
+     * @param mixed $data
+     * @return ResponseInterface|AbstractResponse
+     * @throws InvalidResponseException
+     */
+    public function sendData($data): AbstractResponse|ResponseInterface
+    {
+        try {
+            $processType = $this->getProcessType();
+            if (!empty($processType)) {
+                $data['Type'] = $processType;
+            }
+            $shipInfo = $data['ship'] ?? [];
+            $billInfo = $data['bill'] ?? [];
+            unset($data['ship'], $data['bill']);
+
+            $this->document = new DOMDocument('1.0', 'UTF-8');
+            $this->root = $this->document->createElement('CC5Request');
+            foreach ($data as $id => $value) {
+                $this->root->appendChild($this->document->createElement($id, (string)$value));
+            }
+
+            $extra = $this->document->createElement('Extra');
+
+            if (!empty($this->getOrderStatusQuery())) {
+                $extra->appendChild($this->document->createElement('ORDERSTATUS', 'QUERY'));
+                $this->root->appendChild($extra);
+            }
+
+            $this->document->appendChild($this->root);
+            $this->addShipAndBillToXml($shipInfo, $billInfo);
+            $httpRequest = $this->httpClient->request(
+                $this->getHttpMethod(),
+                $this->getEndpoint(),
+                ['Content-Type' => 'application/x-www-form-urlencoded'],
+                $this->document->saveXML()
+            );
+
+            $response = (string)$httpRequest->getBody()->getContents();
+
+            return $this->response = $this->createResponse($response);
+        } catch (Exception $e) {
+            throw new InvalidResponseException(
+                'Error communicating with payment gateway: ' . $e->getMessage(),
+                $e->getCode()
+            );
+        }
     }
 
     /**

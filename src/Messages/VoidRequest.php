@@ -41,7 +41,6 @@ class VoidRequest extends AbstractRequest
         $data['Password'] = $this->getPassword();
         $data['ClientId'] = $this->getClientId();
 
-
         return $data;
     }
 

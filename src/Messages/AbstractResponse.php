@@ -82,20 +82,4 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
     {
         return $this->data['oid'] ?? $this->data['OrderId'] ?? null;
     }
-
-    /**
-     * @return array
-     */
-    public function getServiceRequestParams(): array
-    {
-        return $this->serviceRequestParams;
-    }
-
-    /**
-     * @param array $serviceRequestParams
-     */
-    public function setServiceRequestParams(array $serviceRequestParams): void
-    {
-        $this->serviceRequestParams = $serviceRequestParams;
-    }
 }

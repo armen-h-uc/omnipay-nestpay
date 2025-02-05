@@ -46,7 +46,6 @@ class RefundRequest extends AbstractRequest
         $data['Total'] = $this->getAmount();
         $data['Currency'] = $this->getCurrencyNumeric();
 
-
         return $data;
     }
 

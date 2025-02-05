@@ -39,7 +39,7 @@ class StatusRequest extends AbstractRequest
         $data['Name'] = $this->getUserName();
         $data['Password'] = $this->getPassword();
         $data['ClientId'] = $this->getClientId();
-        $this->setStatus('true');
+        $this->setOrderStatusQuery(true);
 
         return $data;
     }

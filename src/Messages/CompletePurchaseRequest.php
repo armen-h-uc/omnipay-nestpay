@@ -64,21 +64,15 @@ class CompletePurchaseRequest extends AbstractRequest
         return $data;
     }
 
-
     /**
      * @param $data
      *
      * @return \Omnipay\Common\Message\ResponseInterface
      * @throws \JsonException
-     * @throws \Omnipay\Common\Exception\InvalidResponseException
      */
     public function sendData($data): ResponseInterface
     {
-        if ($this->paymentType == self::PAYMENT_TYPE_3D_HOSTING) {
-            return $this->response = $this->createResponse($this->getResponseData());
-        }
-
-        return parent::sendData($data);
+        return $this->response = $this->createResponse($this->getResponseData());
     }
 
     /**
