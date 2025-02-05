@@ -41,7 +41,6 @@ class VoidRequest extends AbstractRequest
         $data['Password'] = $this->getPassword();
         $data['ClientId'] = $this->getClientId();
 
-        $this->setRequestParams($data);
 
         return $data;
     }
@@ -53,10 +52,6 @@ class VoidRequest extends AbstractRequest
      */
     protected function createResponse($data): VoidResponse
     {
-        $response = new VoidResponse($this, $data);
-        $requestParams = $this->getRequestParams();
-        $response->setServiceRequestParams($requestParams);
-
-        return $response;
+        return new VoidResponse($this, $data);
     }
 }

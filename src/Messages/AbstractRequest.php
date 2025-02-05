@@ -7,12 +7,8 @@ namespace Omnipay\NestPay\Messages;
 use DOMDocument;
 use DOMElement;
 use Exception;
-use InvalidArgumentException;
-use Omnipay\Common\Exception\InvalidCreditCardException;
-use Omnipay\Common\Exception\InvalidRequestException;
 use Omnipay\Common\Exception\InvalidResponseException;
 use Omnipay\Common\Message\ResponseInterface;
-use Omnipay\NestPay\Mask;
 use Omnipay\NestPay\RequestInterface;
 use Omnipay\NestPay\ThreeDResponse;
 use Omnipay\NestPay\Traits\ParametersTrait;
@@ -304,45 +300,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         $data['hash'] = base64_encode(hash('sha512', $hashString, true));
 
         return $data;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getRequestParams(): array
-    {
-        return [
-            'url' => $this->getEndPoint(),
-            'type' => $this->getProcessType(),
-            'data' => $this->requestParams,
-            'method' => $this->getHttpMethod()
-        ];
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return void
-     */
-    protected function setRequestParams(array $data): void
-    {
-        array_walk_recursive($data, [$this, 'updateValue']);
-        $this->requestParams = $data;
-    }
-
-    /**
-     * @param $data
-     * @param $key
-     *
-     * @return void
-     */
-    protected function updateValue(&$data, $key): void
-    {
-        $sensitiveData = $this->getSensitiveData();
-
-        if (\in_array($key, $sensitiveData, true)) {
-            $data = Mask::mask($data);
-        }
     }
 
     /**

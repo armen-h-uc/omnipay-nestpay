@@ -12,8 +12,6 @@ use Omnipay\NestPay\Messages\CompletePurchaseRequest;
 use Omnipay\NestPay\Messages\PurchaseRequest;
 use Omnipay\Common\AbstractGateway;
 use Omnipay\Common\Message\RequestInterface;
-use Omnipay\NestPay\Messages\AuthorizeRequest;
-use Omnipay\NestPay\Messages\CaptureRequest;
 use Omnipay\NestPay\Messages\RefundRequest;
 use Omnipay\NestPay\Messages\StatusRequest;
 use Omnipay\NestPay\Messages\VoidRequest;

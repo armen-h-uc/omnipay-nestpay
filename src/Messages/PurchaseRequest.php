@@ -48,7 +48,6 @@ class PurchaseRequest extends AbstractRequest
         $this->setAction('3d');
         $data = $this->getPurchase3DHostingData();
 
-        $this->setRequestParams($data);
 
         return $data;
     }
@@ -72,10 +71,6 @@ class PurchaseRequest extends AbstractRequest
      */
     protected function createResponse($data): ResponseInterface
     {
-        $response = new Purchase3DResponse($this, $data);
-        $requestParams = $this->getRequestParams();
-        $response->setServiceRequestParams($requestParams);
-
-        return $response;
+        return new Purchase3DResponse($this, $data);
     }
 }

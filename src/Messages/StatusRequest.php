@@ -41,7 +41,6 @@ class StatusRequest extends AbstractRequest
         $data['ClientId'] = $this->getClientId();
         $this->setStatus('true');
 
-        $this->setRequestParams($data);
         return $data;
     }
 
@@ -53,10 +52,6 @@ class StatusRequest extends AbstractRequest
      */
     protected function createResponse($data): StatusResponse
     {
-        $response = new StatusResponse($this, $data);
-        $requestParams = $this->getRequestParams();
-        $response->setServiceRequestParams($requestParams);
-
-        return $response;
+        return new StatusResponse($this, $data);
     }
 }

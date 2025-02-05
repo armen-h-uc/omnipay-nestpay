@@ -46,7 +46,6 @@ class RefundRequest extends AbstractRequest
         $data['Total'] = $this->getAmount();
         $data['Currency'] = $this->getCurrencyNumeric();
 
-        $this->setRequestParams($data);
 
         return $data;
     }
@@ -59,10 +58,6 @@ class RefundRequest extends AbstractRequest
      */
     protected function createResponse($data): RefundResponse
     {
-        $response = new RefundResponse($this, $data);
-        $requestParams = $this->getRequestParams();
-        $response->setServiceRequestParams($requestParams);
-
-        return $response;
+        return new RefundResponse($this, $data);
     }
 }
