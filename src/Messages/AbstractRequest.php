@@ -24,15 +24,15 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     use ParametersTrait;
 
     /** @var $root DOMElement */
-    private $root;
+    private DOMElement $root;
 
     /** @var DOMDocument */
-    private $document;
+    private DOMDocument $document;
 
-    private $action = "purchase";
+    private string $action = "purchase";
 
     /** @var array */
-    protected $requestParams;
+    protected array $requestParams;
 
     /**
      * @return string
@@ -52,7 +52,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getAction(): ?string
     {
@@ -211,39 +211,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     }
 
     /**
-     * @return array
-     * @throws InvalidRequestException
-     */
-    protected function getSalesRequestParams(): array
-    {
-        $gateway = $this->getBank();
-
-        if (!array_key_exists($gateway, $this->baseUrls)) {
-            throw new InvalidArgumentException('Invalid Gateway');
-        }
-
-        $data['Mode'] = $this->getTestMode() ? 'T' : 'P';
-        $data['Name'] = $this->getUserName();
-        $data['ClientId'] = $this->getClientId();
-        $data['Password'] = $this->getPassword();
-        $data['Email'] = $this->getCard()->getEmail();
-        $data['OrderId'] = $this->getTransactionId();
-        $data['GroupId'] = '';
-        $data['TransId'] = '';
-        $data['UserId'] = '';
-        $data['Currency'] = $this->getCurrencyNumeric();
-        $data['Installment'] = $this->getInstallment();
-        $data['Total'] = $this->getAmount();
-        $data['Number'] = $this->getCard()->getNumber();
-        $data['Expires'] = $this->getCard()->getExpiryDate('my');
-        $data['Cvv2Val'] = $this->getCard()->getCvv();
-        $data['IPAddress'] = $this->getClientIp();
-        $data = $this->getShipAndBill($data);
-
-        return $data;
-    }
-
-    /**
      * @param ThreeDResponse $threeDResponse
      * @return array
      */
@@ -280,71 +247,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         $data['Extra'] = '';
 
         return $data;
-    }
-
-    /**
-     * @return array
-     * @throws InvalidCreditCardException
-     * @throws InvalidRequestException
-     */
-    public function getPurchase3DData(): array
-    {
-        $redirectUrl = $this->getEndpoint();
-        $this->validate('amount', 'card');
-
-        $cardBrand = $this->getCard()->getBrand();
-        if (!array_key_exists($cardBrand, $this->allowedCardBrands)) {
-            throw new InvalidCreditCardException('Card is not valid, just only Visa or MasterCard can be usable');
-        }
-
-        $data = [];
-        $data['pan'] = $this->getCard()->getNumber();
-        $data['cv2'] = $this->getCard()->getCvv();
-        $data['Ecom_Payment_Card_ExpDate_Year'] = $this->getCard()->getExpiryDate('y');
-        $data['Ecom_Payment_Card_ExpDate_Month'] = $this->getCard()->getExpiryDate('m');
-        $data['cardType'] = $this->allowedCardBrands[$cardBrand];
-
-        $data['clientid'] = $this->getClientId();
-        $data['oid'] = $this->getTransactionId();
-        $data['amount'] = $this->getAmount();
-        $data['currency'] = $this->getCurrencyNumeric();
-        $data['lang'] = $this->getLang();
-        $data['okUrl'] = $this->getReturnUrl();
-        $data['failUrl'] = $this->getCancelUrl();
-        $data['storetype'] = '3d';
-        $data['rnd'] = $this->getRnd();
-        $data['firmaadi'] = $this->getCompanyName();
-        $data['TransId'] = '';
-
-        $data['taksit'] = "";
-        $installment = $this->getInstallment();
-
-        if ($installment !== null && $installment > 1) {
-            $data['taksit'] = $installment;
-        }
-
-        $signature = $this->getHash($data);
-        $data['hash'] = base64_encode(sha1($signature, true));
-        $data['redirectUrl'] = $redirectUrl;
-
-        return $data;
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return string
-     */
-    public function get3DHostingHash(array $data): string
-    {
-        return $data['clientid'] .
-            $data['oid'] .
-            $data['amount'] .
-            $data['okUrl'] .
-            $data['failUrl'] .
-            $data['trantype'] .
-            $this->getRnd() .
-            $this->getStoreKey();
     }
 
     /**
@@ -405,23 +307,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     }
 
     /**
-     * @param array $data
-     *
-     * @return string
-     */
-    public function getHash(array $data): string
-    {
-        return $data['clientid'] .
-            $data['oid'] .
-            $data['amount'] .
-            $data['okUrl'] .
-            $data['failUrl'] .
-            $data['taksit'] .
-            $this->getRnd() .
-            $this->getStoreKey();
-    }
-
-    /**
      * @return array
      */
     protected function getRequestParams(): array
@@ -458,42 +343,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         if (\in_array($key, $sensitiveData, true)) {
             $data = Mask::mask($data);
         }
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    private function getShipAndBill(array &$data): array
-    {
-        if ($this->getCard() && !empty($this->getCard()->getFirstName())) {
-            $data['ship'] = [
-                'Name' => $this->getCard()->getFirstName() . ' ' . $this->getCard()->getLastName(),
-                'Street1' => $this->getCard()->getShippingAddress1(),
-                'Street2' => $this->getCard()->getShippingAddress2(),
-                'Street3' => '',
-                'City' => $this->getCard()->getShippingCity(),
-                'StateProv' => $this->getCard()->getShippingState(),
-                'PostalCode' => $this->getCard()->getShippingPostcode(),
-                'Country' => $this->getCard()->getShippingCountry(),
-                'Company' => $this->getCard()->getCompany(),
-                'TelVoice' => $this->getCard()->getShippingPhone()
-            ];
-            $data['bill'] = [
-                'Name' => $this->getCard()->getFirstName() . ' ' . $this->getCard()->getLastName(),
-                'Street1' => $this->getCard()->getBillingAddress1(),
-                'Street2' => $this->getCard()->getBillingAddress2(),
-                'Street3' => '',
-                'City' => $this->getCard()->getBillingCity(),
-                'StateProv' => $this->getCard()->getBillingState(),
-                'PostalCode' => $this->getCard()->getBillingPostcode(),
-                'Country' => $this->getCard()->getBillingCountry(),
-                'Company' => $this->getCard()->getCompany(),
-                'TelVoice' => $this->getCard()->getBillingPhone()
-            ];
-        }
-
-        return $data;
     }
 
     /**

@@ -41,20 +41,12 @@ class PurchaseRequest extends AbstractRequest
 
     /**
      * @return array
-     * @throws \Omnipay\Common\Exception\InvalidCreditCardException
      * @throws \Omnipay\Common\Exception\InvalidRequestException
      */
     public function getData(): array
     {
-        if ($this->getPaymentMethod() === self::PAYMENT_TYPE_3D_HOSTING) {
-            $this->setAction('3d');
-            $data = $this->getPurchase3DHostingData();
-        } elseif ($this->getPaymentMethod() === self::PAYMENT_TYPE_3D) {
-            $this->setAction('3d');
-            $data = $this->getPurchase3DData();
-        } else {
-            $data = $this->getSalesRequestParams();
-        }
+        $this->setAction('3d');
+        $data = $this->getPurchase3DHostingData();
 
         $this->setRequestParams($data);
 
@@ -62,31 +54,25 @@ class PurchaseRequest extends AbstractRequest
     }
 
     /**
-     * @param mixed $data
+     * @param $data
      *
-     * @return ResponseInterface
-     * @throws InvalidResponseException
+     * @return \Omnipay\Common\Message\ResponseInterface
+     * @throws \JsonException
      */
     public function sendData($data): ResponseInterface
     {
-        if (in_array($this->getPaymentMethod(), [self::PAYMENT_TYPE_3D, self::PAYMENT_TYPE_3D_HOSTING])) {
-            return $this->response = $this->createResponse($data, Purchase3DResponse::class);
-        }
-
-        return parent::sendData($data);
+        return $this->response = $this->createResponse($data);
     }
 
     /**
-     * @param $responseClass
      * @param $data
      *
-     * @return ResponseInterface
+     * @return \Omnipay\Common\Message\ResponseInterface
+     * @throws \JsonException
      */
-    protected function createResponse($data, $responseClass = null): ResponseInterface
+    protected function createResponse($data): ResponseInterface
     {
-        $class = $responseClass ?? PurchaseResponse::class;
-
-        $response = new $class($this, $data);
+        $response = new Purchase3DResponse($this, $data);
         $requestParams = $this->getRequestParams();
         $response->setServiceRequestParams($requestParams);
 
