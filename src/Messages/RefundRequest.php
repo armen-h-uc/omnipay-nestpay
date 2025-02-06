@@ -7,14 +7,6 @@ namespace Omnipay\NestPay\Messages;
 class RefundRequest extends AbstractRequest
 {
     /**
-     * @return array
-     */
-    public function getSensitiveData(): array
-    {
-        return ['Password'];
-    }
-
-    /**
      * @return string
      */
     public function getProcessName(): string

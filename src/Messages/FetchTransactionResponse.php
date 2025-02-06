@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Omnipay\NestPay\Messages;
 
-class StatusResponse extends AbstractResponse
+class FetchTransactionResponse extends AbstractResponse
 {
     /**
      * @return bool

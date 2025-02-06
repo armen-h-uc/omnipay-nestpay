@@ -9,9 +9,6 @@ use Omnipay\Common\Message\RequestInterface;
 
 abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse implements RedirectResponseInterface
 {
-    /** @var array */
-    public array $serviceRequestParams;
-
     /**
      * AbstractResponse constructor.
      *
@@ -48,6 +45,7 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
     public function getCode(): ?string
     {
         $authCode = $this->data['AuthCode'] ?? $this->data['Extra']['AUTH_CODE'] ?? null;
+
         return $this->isSuccessful() ? $authCode : parent::getCode();
     }
 
@@ -72,7 +70,7 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
      */
     public function getTransactionReference(): ?string
     {
-        return $this->isSuccessful() ? $this->data['TransId'] ?? '' : parent::getTransactionReference();
+        return $this->data['TransId'] ?? null;
     }
 
     /**

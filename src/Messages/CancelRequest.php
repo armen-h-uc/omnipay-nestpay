@@ -4,16 +4,8 @@ declare(strict_types=1);
 
 namespace Omnipay\NestPay\Messages;
 
-class VoidRequest extends AbstractRequest
+class CancelRequest extends AbstractRequest
 {
-    /**
-     * @return array
-     */
-    public function getSensitiveData(): array
-    {
-        return ['Password'];
-    }
-
     /**
      * @return string
      */
@@ -46,11 +38,11 @@ class VoidRequest extends AbstractRequest
 
     /**
      * @param $data
-     * @return VoidResponse
+     * @return CancelResponse
      * @throws \JsonException
      */
-    protected function createResponse($data): VoidResponse
+    protected function createResponse($data): CancelResponse
     {
-        return new VoidResponse($this, $data);
+        return new CancelResponse($this, $data);
     }
 }

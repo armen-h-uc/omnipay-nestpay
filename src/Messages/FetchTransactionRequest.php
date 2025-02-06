@@ -4,16 +4,8 @@ declare(strict_types=1);
 
 namespace Omnipay\NestPay\Messages;
 
-class StatusRequest extends AbstractRequest
+class FetchTransactionRequest extends AbstractRequest
 {
-    /**
-     * @return array
-     */
-    public function getSensitiveData(): array
-    {
-        return ['Password'];
-    }
-
     /**
      * @return string
      */
@@ -47,11 +39,11 @@ class StatusRequest extends AbstractRequest
     /**
      * @param $data
      *
-     * @return StatusResponse
+     * @return FetchTransactionResponse
      * @throws \JsonException
      */
-    protected function createResponse($data): StatusResponse
+    protected function createResponse($data): FetchTransactionResponse
     {
-        return new StatusResponse($this, $data);
+        return new FetchTransactionResponse($this, $data);
     }
 }

@@ -6,310 +6,345 @@ namespace Omnipay\NestPay;
 
 class ThreeDResponse
 {
-    public $mdStatus;
-    public $clientId;
-    public $amount;
-    public $currency;
-    public $xid;
-    public $oid;
-    public $cavv;
-    public $eci;
-    public $md;
-    public $rnd;
-    public $hashParams;
-    public $hashParamsVal;
-    public $hash;
-    public $groupId;
-    public $transId;
-    public $userId;
-    public $ipAddress;
-    public $installment;
+    public string|null $mdStatus;
+    public string|null $clientId;
+    public string|null $amount;
+    public string|null $currency;
+    public string|null $xid;
+    public string|null $oid;
+    public string|null $cavv;
+    public string|null $eci;
+    public string|null $md;
+    public string|null $rnd;
+    public string|null $hashParams;
+    public string|null $hashParamsVal;
+    public string|null $hash;
+    public string|null $groupId;
+    public string|null $transId;
+    public string|null $userId;
+    public string|null $ipAddress;
+    public string|null $installment;
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getMdStatus()
+    public function getMdStatus(): ?string
     {
         return $this->mdStatus;
     }
 
     /**
-     * @param mixed $mdStatus
+     * @param string|null $mdStatus
+     *
+     * @return void
      */
-    public function setMdStatus($mdStatus): void
+    public function setMdStatus(?string $mdStatus): void
     {
         $this->mdStatus = $mdStatus;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getClientId()
+    public function getClientId(): ?string
     {
         return $this->clientId;
     }
 
     /**
-     * @param mixed $clientId
+     * @param string|null $clientId
+     *
+     * @return void
      */
-    public function setClientId($clientId): void
+    public function setClientId(?string $clientId): void
     {
         $this->clientId = $clientId;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getAmount()
+    public function getAmount(): ?string
     {
         return $this->amount;
     }
 
     /**
-     * @param mixed $amount
+     * @param string|null $amount
+     *
+     * @return void
      */
-    public function setAmount($amount): void
+    public function setAmount(?string $amount): void
     {
         $this->amount = $amount;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getCurrency()
+    public function getCurrency(): ?string
     {
         return $this->currency;
     }
 
     /**
-     * @param mixed $currency
+     * @param string|null $currency
+     *
+     * @return void
      */
-    public function setCurrency($currency): void
+    public function setCurrency(?string $currency): void
     {
         $this->currency = $currency;
     }
 
-
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getXid()
+    public function getXid(): ?string
     {
         return $this->xid;
     }
 
     /**
-     * @param mixed $xid
+     * @param string|null $xid
+     *
+     * @return void
      */
-    public function setXid($xid): void
+    public function setXid(?string $xid): void
     {
         $this->xid = $xid;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getOid()
+    public function getOid(): ?string
     {
         return $this->oid;
     }
 
     /**
-     * @param mixed $oid
+     * @param string|null $oid
+     *
+     * @return void
      */
-    public function setOid($oid): void
+    public function setOid(?string $oid): void
     {
         $this->oid = $oid;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getCavv()
+    public function getCavv(): ?string
     {
         return $this->cavv;
     }
 
     /**
-     * @param mixed $cavv
+     * @param string|null $cavv
+     *
+     * @return void
      */
-    public function setCavv($cavv): void
+    public function setCavv(?string $cavv): void
     {
         $this->cavv = $cavv;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getEci()
+    public function getEci(): ?string
     {
         return $this->eci;
     }
 
     /**
-     * @param mixed $eci
+     * @param string|null $eci
+     *
+     * @return void
      */
-    public function setEci($eci): void
+    public function setEci(?string $eci): void
     {
         $this->eci = $eci;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getMd()
+    public function getMd(): ?string
     {
         return $this->md;
     }
 
     /**
-     * @param mixed $md
+     * @param string|null $md
+     *
+     * @return void
      */
-    public function setMd($md): void
+    public function setMd(?string $md): void
     {
         $this->md = $md;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getRnd()
+    public function getRnd(): ?string
     {
         return $this->rnd;
     }
 
     /**
-     * @param mixed $rnd
+     * @param string|null $rnd
+     *
+     * @return void
      */
-    public function setRnd($rnd): void
+    public function setRnd(?string $rnd): void
     {
         $this->rnd = $rnd;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getHashParams()
+    public function getHashParams(): ?string
     {
         return $this->hashParams;
     }
 
     /**
-     * @param mixed $hashParams
+     * @param string|null $hashParams
+     *
+     * @return void
      */
-    public function setHashParams($hashParams): void
+    public function setHashParams(?string $hashParams): void
     {
         $this->hashParams = $hashParams;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getHashParamsVal()
+    public function getHashParamsVal(): ?string
     {
         return $this->hashParamsVal;
     }
 
     /**
-     * @param mixed $hashParamsVal
+     * @param string|null $hashParamsVal
+     *
+     * @return void
      */
-    public function setHashParamsVal($hashParamsVal): void
+    public function setHashParamsVal(?string $hashParamsVal): void
     {
         $this->hashParamsVal = $hashParamsVal;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getHash()
+    public function getHash(): ?string
     {
         return $this->hash;
     }
 
     /**
-     * @param mixed $hash
+     * @param string|null $hash
+     *
+     * @return void
      */
-    public function setHash($hash): void
+    public function setHash(?string $hash): void
     {
         $this->hash = $hash;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getGroupId()
+    public function getGroupId(): ?string
     {
         return $this->groupId;
     }
 
     /**
-     * @param mixed $groupId
+     * @param string|null $groupId
+     *
+     * @return void
      */
-    public function setGroupId($groupId): void
+    public function setGroupId(?string $groupId): void
     {
         $this->groupId = $groupId;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getTransId()
+    public function getTransId(): ?string
     {
         return $this->transId;
     }
 
     /**
-     * @param mixed $transId
+     * @param string|null $transId
+     *
+     * @return void
      */
-    public function setTransId($transId): void
+    public function setTransId(?string $transId): void
     {
         $this->transId = $transId;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getUserId()
+    public function getUserId(): ?string
     {
         return $this->userId;
     }
 
     /**
-     * @param mixed $userId
+     * @param string|null $userId
+     *
+     * @return void
      */
-    public function setUserId($userId): void
+    public function setUserId(?string $userId): void
     {
         $this->userId = $userId;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getIpAddress()
+    public function getIpAddress(): ?string
     {
         return $this->ipAddress;
     }
 
     /**
-     * @param mixed $ipAddress
+     * @param string|null $ipAddress
+     *
+     * @return void
      */
-    public function setIpAddress($ipAddress): void
+    public function setIpAddress(?string $ipAddress): void
     {
         $this->ipAddress = $ipAddress;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getInstallment()
+    public function getInstallment(): ?string
     {
         return $this->installment;
     }
 
     /**
-     * @param mixed $installment
+     * @param string|null $installment
+     *
+     * @return void
      */
-    public function setInstallment($installment): void
+    public function setInstallment(?string $installment): void
     {
         $this->installment = $installment;
     }

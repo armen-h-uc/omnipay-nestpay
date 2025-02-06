@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Omnipay\NestPay\Messages;
 
 use Omnipay\Common\Message\ResponseInterface;
+use Omnipay\NestPay\Factoryes\ThreeDResponseFactory;
 use Omnipay\NestPay\ThreeDResponse;
 use RuntimeException;
 
@@ -14,15 +15,6 @@ class CompletePurchaseRequest extends AbstractRequest
 
     /** @var ThreeDResponse */
     private ThreeDResponse $threeDResponse;
-    private string|null $paymentType;
-
-    /**
-     * @return string[]
-     */
-    public function getSensitiveData(): array
-    {
-        return ['Password', 'Number', 'Expires', 'Cvv2Val'];
-    }
 
     /**
      * @return string
@@ -41,15 +33,54 @@ class CompletePurchaseRequest extends AbstractRequest
     }
 
     /**
+     * @param ThreeDResponse $threeDResponse
+     * @return array
+     */
+    protected function getCompletePurchaseParams(ThreeDResponse $threeDResponse): array
+    {
+        $data['Name'] = $this->getUserName();
+        $data['Password'] = $this->getPassword();
+        $data['ClientId'] = $threeDResponse->getClientId();
+        $data['IPAddress'] = $threeDResponse->getIpAddress();
+        $data['Mode'] = ($this->getTestMode()) ? 'T' : 'P';
+        $data['Number'] = $threeDResponse->getMd();
+        $data['OrderId'] = $threeDResponse->getOid();
+        $data['GroupId'] = $threeDResponse->getGroupId() ?? '';
+        $data['TransId'] = $threeDResponse->getTransId() ?? '';
+        $data['UserId'] = $threeDResponse->getUserId() ?? '';
+        $data['Type'] = $this->getProcessType();
+        $data['Expires'] = '';
+        $data['Cvv2Val'] = '';
+        $data['Total'] = $threeDResponse->getAmount();
+        $data['Currency'] = $threeDResponse->getCurrency();
+        $installment = $threeDResponse->getInstallment();
+
+        if (empty($installment) || (int)$installment < 2) {
+            $installment = '';
+        }
+
+        $data['Taksit'] = $installment;
+        $data['PayerTxnId'] = $threeDResponse->getXid();
+        $data['PayerSecurityLevel'] = $threeDResponse->getEci();
+        $data['PayerAuthenticationCode'] = $threeDResponse->getCavv();
+        $data['CardholderPresentCode'] = 13;
+        $data['bill'] = $this->getBillTo();
+        $data['ship'] = $this->getShipTo();
+        $data['Extra'] = '';
+
+        return $data;
+    }
+
+    /**
      * @return array
      */
     public function getData(): array
     {
-        $this->paymentType = $this->getResponseData()['storetype'] ?? null;
+        $paymentType = $this->getResponseData()['storetype'] ?? null;
 
         $this->threeDResponse = $this->getThreeDResponse();
 
-        if ($this->paymentType !== self::PAYMENT_TYPE_3D_HOSTING) {
+        if ($paymentType !== self::PAYMENT_TYPE_3D_HOSTING) {
             if (!in_array($this->threeDResponse->getMdStatus(), [1, 2, 3, 4], false)) {
                 throw new RuntimeException('3DSecure verification error');
             }
@@ -59,9 +90,7 @@ class CompletePurchaseRequest extends AbstractRequest
             throw new RuntimeException('Hash data invalid');
         }
 
-        $data = $this->getCompletePurchaseParams($this->threeDResponse);
-
-        return $data;
+        return $this->getCompletePurchaseParams($this->threeDResponse);
     }
 
     /**
@@ -91,39 +120,9 @@ class CompletePurchaseRequest extends AbstractRequest
      */
     private function getThreeDResponse(): ThreeDResponse
     {
-        $threeDResponse = new ThreeDResponse();
         $responseData = $this->getResponseData();
-        $ipAddress = $responseData['clientIp'] ?? null;
-        $installment = $responseData['taksit'] ?? null;
-        $userId = $responseData['userId'] ?? null;
-        $groupId = $responseData['groupId'] ?? null;
-        $transId = $responseData['TRANID'] ?? null;
-        $threeDResponse->setMdStatus($responseData['mdStatus']);
-        $threeDResponse->setClientId($responseData['clientid']);
-        $threeDResponse->setAmount($responseData['amount']);
-        $threeDResponse->setCurrency($responseData['currency']);
-        $threeDResponse->setXid($responseData['xid']);
-        $threeDResponse->setOid($responseData['oid']);
-        $threeDResponse->setCavv($responseData['cavv'] ?? null);
-        $threeDResponse->setEci($responseData['eci'] ?? null);
-        $threeDResponse->setMd($responseData['md']);
-        $threeDResponse->setRnd($responseData['rnd']);
-        $threeDResponse->setHashParams($responseData['HASHPARAMS'] ?? null);
-        $threeDResponse->setHashParamsVal(
-            $responseData['HASHPARAMSVAL'] ?? null
-        );
-        $threeDResponse->setHash($responseData['HASH']);
 
-        if ($ipAddress !== null) {
-            $threeDResponse->setIpAddress($ipAddress);
-        }
-
-        $threeDResponse->setInstallment($installment);
-        $threeDResponse->setUserId($userId);
-        $threeDResponse->setGroupId($groupId);
-        $threeDResponse->setTransId($transId);
-
-        return $threeDResponse;
+        return ThreeDResponseFactory::getThreeDResponse($responseData);
     }
 
     /**

@@ -9,13 +9,6 @@ use Omnipay\Common\Message\ResponseInterface;
 
 class PurchaseRequest extends AbstractRequest
 {
-    /**
-     * @return array
-     */
-    public function getSensitiveData(): array
-    {
-        return ['Number', 'Expires', 'Password'];
-    }
 
     /**
      * @return string
@@ -33,12 +26,53 @@ class PurchaseRequest extends AbstractRequest
         return 'Auth';
     }
 
+    public function getPurchase3DHostingData(): array
+    {
+        $redirectUrl = $this->getEndpoint();
+
+        $data = [];
+        $data['clientid'] = $this->getClientId();
+        $data['oid'] = $this->getTransactionId();
+        $data['amount'] = $this->getAmount();
+        $data['currency'] = $this->getCurrencyNumeric();
+        $data['lang'] = $this->getLang();
+        $data['okUrl'] = $this->getReturnUrl();
+        $data['failUrl'] = $this->getCancelUrl();
+        $data['storetype'] = '3d_pay_hosting';
+        $data['trantype'] = 'Auth';
+        $data['rnd'] = $this->getRnd();
+        $data['refreshtime'] = $this->getTestMode() ? 10 : 0;
+        $installment = $this->getInstallment();
+
+        if ($installment !== null && $installment > 1) {
+            $data['taksit'] = $installment;
+        }
+
+        $data['hashAlgorithm'] = 'ver3';
+
+        $data['redirectUrl'] = $redirectUrl;
+        ksort($data);
+        $hashString = '';
+
+        foreach ($data as $value) {
+            $escapedValue = str_replace(['|', '\\'], ['\|', '\\\\'], (string)$value);
+            $hashString .= $escapedValue.'|';
+        }
+
+        $hashString .= $this->getStoreKey();
+        $data['hash'] = base64_encode(hash('sha512', $hashString, true));
+
+        return $data;
+    }
+
+
     /**
      * @return array
      * @throws \Omnipay\Common\Exception\InvalidRequestException
      */
     public function getData(): array
     {
+        $this->validate('amount');
         $this->setAction('3d');
 
         return $this->getPurchase3DHostingData();

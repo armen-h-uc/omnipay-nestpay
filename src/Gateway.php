@@ -1,35 +1,20 @@
 <?php
 
 declare(strict_types=1);
-/**
- * NestPay Class using API
- */
 
 namespace Omnipay\NestPay;
 
-use Omnipay\Common\Message\NotificationInterface;
+use Omnipay\NestPay\Messages\CancelRequest;
 use Omnipay\NestPay\Messages\CompletePurchaseRequest;
+use Omnipay\NestPay\Messages\FetchTransactionRequest;
 use Omnipay\NestPay\Messages\PurchaseRequest;
 use Omnipay\Common\AbstractGateway;
 use Omnipay\Common\Message\RequestInterface;
 use Omnipay\NestPay\Messages\RefundRequest;
-use Omnipay\NestPay\Messages\StatusRequest;
-use Omnipay\NestPay\Messages\VoidRequest;
 
-/**
- * @method NotificationInterface acceptNotification(array $options = array())
- * @method RequestInterface completeAuthorize(array $options = array())
- * @method RequestInterface fetchTransaction(array $options = [])
- * @method RequestInterface createCard(array $options = array())
- * @method RequestInterface updateCard(array $options = array())
- * @method RequestInterface deleteCard(array $options = array())
- */
 class Gateway extends AbstractGateway
 {
     /**
-     * Get gateway display name
-     *
-     * This can be used by carts to get the display name for each gateway.
      * @return string
      */
     public function getName(): string
@@ -169,9 +154,9 @@ class Gateway extends AbstractGateway
      *
      * @return \Omnipay\Common\Message\RequestInterface
      */
-    public function void(array $parameters = []): RequestInterface
+    public function cancel(array $parameters = []): RequestInterface
     {
-        return $this->createRequest(VoidRequest::class, $parameters);
+        return $this->createRequest(CancelRequest::class, $parameters);
     }
 
     /**
@@ -179,8 +164,8 @@ class Gateway extends AbstractGateway
      *
      * @return \Omnipay\Common\Message\RequestInterface
      */
-    public function status(array $parameters = []): RequestInterface
+    public function fetchTransaction(array $parameters = []): RequestInterface
     {
-        return $this->createRequest(StatusRequest::class, $parameters);
+        return $this->createRequest(FetchTransactionRequest::class, $parameters);
     }
 }

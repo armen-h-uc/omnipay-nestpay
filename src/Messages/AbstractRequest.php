@@ -10,7 +10,6 @@ use Exception;
 use Omnipay\Common\Exception\InvalidResponseException;
 use Omnipay\Common\Message\ResponseInterface;
 use Omnipay\NestPay\RequestInterface;
-use Omnipay\NestPay\ThreeDResponse;
 use Omnipay\NestPay\Traits\ParametersTrait;
 use Omnipay\NestPay\Traits\RequestTrait;
 
@@ -209,45 +208,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     }
 
     /**
-     * @param ThreeDResponse $threeDResponse
-     * @return array
-     */
-    protected function getCompletePurchaseParams(ThreeDResponse $threeDResponse): array
-    {
-        $data['Name'] = $this->getUserName();
-        $data['Password'] = $this->getPassword();
-        $data['ClientId'] = $threeDResponse->getClientId();
-        $data['IPAddress'] = $threeDResponse->getIpAddress();
-        $data['Mode'] = ($this->getTestMode()) ? 'T' : 'P';
-        $data['Number'] = $threeDResponse->getMd();
-        $data['OrderId'] = $threeDResponse->getOid();
-        $data['GroupId'] = $threeDResponse->getGroupId() ?? '';
-        $data['TransId'] = $threeDResponse->getTransId() ?? '';
-        $data['UserId'] = $threeDResponse->getUserId() ?? '';
-        $data['Type'] = $this->getProcessType();
-        $data['Expires'] = '';
-        $data['Cvv2Val'] = '';
-        $data['Total'] = $threeDResponse->getAmount();
-        $data['Currency'] = $threeDResponse->getCurrency();
-        $installment = $threeDResponse->getInstallment();
-
-        if (empty($installment) || (int)$installment < 2) {
-            $installment = '';
-        }
-
-        $data['Taksit'] = $installment;
-        $data['PayerTxnId'] = $threeDResponse->getXid();
-        $data['PayerSecurityLevel'] = $threeDResponse->getEci();
-        $data['PayerAuthenticationCode'] = $threeDResponse->getCavv();
-        $data['CardholderPresentCode'] = 13;
-        $data['bill'] = $this->getBillTo();
-        $data['ship'] = $this->getShipTo();
-        $data['Extra'] = '';
-
-        return $data;
-    }
-
-    /**
      * @return string|null
      */
     public function getCurrencyNumeric(): ?string
@@ -258,50 +218,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
         }
 
         return null;
-    }
-
-    /**
-     * @return array
-     * @throws \Omnipay\Common\Exception\InvalidRequestException
-     */
-    public function getPurchase3DHostingData(): array
-    {
-        $redirectUrl = $this->getEndpoint();
-        $this->validate('amount');
-
-        $data = [];
-        $data['clientid'] = $this->getClientId();
-        $data['oid'] = $this->getTransactionId();
-        $data['amount'] = $this->getAmount();
-        $data['currency'] = $this->getCurrencyNumeric();
-        $data['lang'] = $this->getLang();
-        $data['okUrl'] = $this->getReturnUrl();
-        $data['failUrl'] = $this->getCancelUrl();
-        $data['storetype'] = '3d_pay_hosting';
-        $data['trantype'] = 'Auth';
-        $data['rnd'] = $this->getRnd();
-        $data['refreshtime'] = $this->getTestMode() ? 10 : 0;
-        $installment = $this->getInstallment();
-
-        if ($installment !== null && $installment > 1) {
-            $data['taksit'] = $installment;
-        }
-
-        $data['hashAlgorithm'] = 'ver3';
-
-        $data['redirectUrl'] = $redirectUrl;
-        ksort($data);
-        $hashString = '';
-
-        foreach ($data as $value) {
-            $escapedValue = str_replace(['|', '\\'], ['\|', '\\\\'], (string) $value);
-            $hashString .= $escapedValue . '|';
-        }
-
-        $hashString .= $this->getStoreKey();
-        $data['hash'] = base64_encode(hash('sha512', $hashString, true));
-
-        return $data;
     }
 
     /**
@@ -333,7 +249,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     /**
      * @return string[]
      */
-    private function getBillTo(): array
+    protected function getBillTo(): array
     {
         return [
             'Name' => '',
@@ -352,7 +268,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest i
     /**
      * @return string[]
      */
-    private function getShipTo(): array
+    protected function getShipTo(): array
     {
         return [
             'Name' => '',
