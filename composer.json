@@ -11,7 +11,7 @@
     "nestPay",
     "purchase"
   ],
-  "homepage": "https://github.com/craft-com/omnipay-nestPay",
+  "homepage": "https://github.com/ucraft-com/omnipay-nestPay",
   "license": "MIT",
   "authors": [
     {

@@ -9,7 +9,6 @@ use Omnipay\Common\Message\ResponseInterface;
 
 class PurchaseRequest extends AbstractRequest
 {
-
     /**
      * @return string
      */
